@@ -4,14 +4,12 @@
 <head>
 <link href="bundle.css" rel="stylesheet" type="text/css">
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-<script
-	src="https://test.ctpe.net/frontend/widget/v3/widget.js?language=en&style=card">
-</script>
+<%
+    String orderId = (String)request.getAttribute("orderId");
+%>
+<script src="https://test.oppwa.com/v1/paymentWidgets.js?orderId=<%=orderId%>"></script>
 </head>
 <body id="payment">
-<%
-    String token = (String)request.getAttribute("token");
-%>
 	<header id="pagetop" class="type-2">
 		<div class="container_12">
 			<div class="grid_12 clearfix masthead">
@@ -92,8 +90,7 @@
 					<h3>How do you you want to pay?</h3>
 
 					<!-- put the payment form here -->
-					<form action="http://localhost:8080/mavenServlet/status" id="<%=token%>">visa master</form>
-
+					<form action="http://localhost:8080/mavenServlet/status" class="paymentWidgets">VISA MASTER</form>
 				</section>
 			</div>
 			<div class="grid_3 aside">

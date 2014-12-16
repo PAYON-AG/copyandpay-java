@@ -18,9 +18,9 @@ Call it on http://localhost:8080/mavenServlet/payment
 
 ## Developing
 
-* *PaymentServlet.java* does step 1 of the tutorial: it calls CreateToken and dispatches to the payment.jsp
-* *payment.jsp* does step 2 of the tutorial: reads the token as a request attribute and displays the payment page
-* *StatusServlet.java* does step 3 of the tutorial: receives the redirect of the user after payment. It calls GetStatus, evaluates it an dispatches to the paymentSuccess.jsp or paymentError.jsp.
+* *PaymentServlet.java* does step 1 of the tutorial: it creates an order and dispatches to the payment.jsp
+* *payment.jsp* does step 2 of the tutorial: reads the order's id as a request attribute and displays the payment page
+* *StatusServlet.java* does step 3 of the tutorial: receives the redirect of the user after payment. It calls a GET on /orders, evaluates the response an dispatches to the paymentSuccess.jsp or paymentError.jsp.
 
 ### Tools
 
