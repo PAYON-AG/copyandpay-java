@@ -20,15 +20,17 @@ public class StatusServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	        throws ServletException, IOException
 	{
-	    String orderId = request.getParameter("orderId");
+	    String orderId = request.getParameter("id");
+	    System.out.println("got orderid " + orderId);
 	  //TODO this needs proper validation 
 	    URL url = new URL("https://test.oppwa.com/v1/orders/" + orderId);
 	    HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 	  
 	    String content = IOUtils.toString(conn.getInputStream());
+	    System.out.println("response is " + content);
 	    try {
 	        String status = JsonPath.read(content, "$.result.code");
-	        if ("00".equals(status))
+	        if ("000.100.110".equals(status))
 	        {
 	            request.getRequestDispatcher("paymentSuccess.jsp").forward(request, response);
 	            return;
