@@ -1,16 +1,19 @@
 package com.payon.copyandpay;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+
 import com.jayway.jsonpath.JsonPath;
 
 public class PaymentServlet extends HttpServlet
@@ -20,12 +23,22 @@ public class PaymentServlet extends HttpServlet
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		String orderResponse = prepareOrder();
-		System.out.println("got response: " + orderResponse);
-		String token = JsonPath.read(orderResponse, "$.id");
-		request.setAttribute("orderId", token);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("payment.jsp");
-		dispatcher.forward(request, response);
+		String checkoutId = JsonPath.read(prepareCheckout(), "$.id");
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+		
+		out.println("<!DOCTYPE html>");
+		out.println("<html>");
+		out.println("<head>");
+		out.println("	<title>COPYandPAY Java</title>");
+		out.println("	<script src=\"https://test.oppwa.com/v1/paymentWidgets.js?checkoutId=" + checkoutId +"\"></script>");
+		out.println("</head>");
+		out.println("<body>");
+		out.println("	<form action=\"http://192.168.2.109:8080/copyandpay-java/status\" class=\"paymentWidgets\">VISA MASTER</form>");
+		out.println("</body>");
+		out.println("</html>");
+		
+		out.flush();
 	}
 
 	@Override
@@ -34,36 +47,33 @@ public class PaymentServlet extends HttpServlet
 		doGet(req, resp);
 	}
 
-	private String prepareOrder()
+	private String prepareCheckout() throws IOException
 	{
-		try
-		{
-			URL url = new URL("https://test.oppwa.com/v1/orders");
+		URL url = new URL("https://test.oppwa.com/v1/checkouts");
 
-			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 
-			conn.setRequestMethod("POST");
-			conn.setDoInput(true);
-			conn.setDoOutput(true);
+		conn.setRequestMethod("POST");
+		conn.setDoInput(true);
+		conn.setDoOutput(true);
+		
+		String parameters = "authentication.userId=8a82941847c4d0780147cea1d1730dcc"
+				+ "&authentication.password=n3yNMBGK" 
+				+ "&authentication.entityId=8a82941849745dd3014979fc254205d3"
+				+ "&paymentType=DB" 
+				+ "&amount=50.99" 
+				+ "&currency=EUR";
 
-			
-			String parameters = "authentication.userId=8a82941847c4d0780147cea1d1730dcc"
-					+ "&authentication.password=n3yNMBGK" 
-					+ "&authentication.entityId=8a82941849745dd3014979fc254205d3"
-					+ "&paymentType=DB" 
-					+ "&amount=50.99" 
-					+ "&currency=EUR";
-
-			IOUtils.write(parameters, conn.getOutputStream());
-
-			conn.connect();
-
-			String content = IOUtils.toString(conn.getInputStream());
-			return content;
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-			return "NO_ORDERID";
-		} 
+		DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+        wr.writeBytes(parameters);
+        wr.flush();
+        wr.close();
+        int responseCode = conn.getResponseCode();
+        InputStream is;
+        
+        if (responseCode >= 400) is = conn.getErrorStream();
+        else is = conn.getInputStream();
+        
+		return IOUtils.toString(is);
 	}
 }

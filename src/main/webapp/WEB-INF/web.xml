@@ -3,7 +3,7 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-	<display-name>Archetype Created Web Application</display-name>
+	<display-name>COPYandPAY Java</display-name>
 	<servlet>
 		<servlet-name>PaymentServlet</servlet-name>
 		<servlet-class>com.payon.copyandpay.PaymentServlet</servlet-class>
@@ -18,6 +18,7 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>PaymentServlet</servlet-name>
-		<url-pattern>/payment</url-pattern>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+	
 </web-app>
